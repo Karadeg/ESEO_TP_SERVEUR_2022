@@ -5,8 +5,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -14,108 +16,111 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.dao.DaoFactory;
+import com.data.models.Ville;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
+//@CrossOrigin(origins = "http://localhost:8080")
 @RestController
+//@RequestMapping(path="/JSON", produces="application/json")
 public class VilleController {
 
 	// fonction pour récupérer le contenu de la BDD
 	@RequestMapping(value="/ville", method=RequestMethod.GET)
-	public String get(@RequestParam(required  = false, value="codePostal") String codePostal) {
-		System.out.println("get");
+	public String select(@RequestParam(required  = false, value="codePostal") String codePostal) {
+		System.out.println("Requête get");
 		Connection connexion = null;
 		Statement statement = null;
 		ResultSet resultat = null;
-		String villeDescription = "";
+		Ville ville = null;
 
 		try {
-			System.out.println("Je rentre dans le try");
 			DaoFactory daoFactory = DaoFactory.getInstance();
 			connexion = daoFactory.getConnection();
-			System.out.println("Connexion get");
 
 			//Trouver les identifiants des équipes
 			String requete = "SELECT * FROM ville_france WHERE Code_postal = "+codePostal+";";
 			statement = connexion.createStatement();
 			resultat = statement.executeQuery(requete);
-			System.out.println("Requête envoyé");
+			System.out.println("Requête select envoyé");
 			
 			while (resultat.next()) {
-				String code_commune = resultat.getString("Code_commune_INSEE");
-				String nom_commune = resultat.getString("Nom_commune");
-				villeDescription += "<p>Code commune INSEE : "+code_commune+" Nom commune : "+nom_commune+"</p>";
-				System.out.println("Code commune INSEE : "+code_commune+"\nNom commune : "+nom_commune+"\n");
+				ville = new Ville();
+				ville.setCode_commune_INSEE(resultat.getInt("Code_commune_INSEE"));
+				ville.setNom_commune(resultat.getString("Nom_commune"));
+				ville.setCode_postal(resultat.getInt("Code_postal"));
+				ville.setLibelle_acheminement(resultat.getString("Libelle_acheminement"));
+				ville.setLigne_5(resultat.getString("Ligne_5"));
+				ville.setLatitude(resultat.getDouble("Latitude"));
+				ville.setLongitude(resultat.getDouble("Longitude"));
+				
+				System.out.println(ville.toString());
 			}
 		} catch (SQLException e) {
-			System.out.println("ça merde");
+			System.out.println("Requête INSERT échouée : "+e.getMessage());
 		}
-
-		return villeDescription;
+		return ville.toString();
 	}
 	
 	@RequestMapping(value="/ville", method=RequestMethod.POST)
-	public String getInsert(@RequestBody String request) {
-		System.out.println(request);
+	public String insert(@RequestBody String request) {
+		Map<String, Object> response = null;
+		try {
+			response = new ObjectMapper().readValue(request, HashMap.class);
+		} catch (JsonProcessingException e1) {
+			e1.printStackTrace();
+		}
+		Ville ville = new Ville();
 		
-		String[] requestParams;
-		String Code_commune_INSEE = "";
-		String Nom_commune = "";
-		String Code_postal = "";
-		String Libelle_acheminement = "";
-		String Ligne_5 = "";
-		String Latitude = "";
-		String Longitude = "";
-		
-		requestParams = request.split("&");
-		for (String requestParam : requestParams) {
-			String nomVariable = requestParam.split("=")[0];
-			String valeurVariable = requestParam.split("=")[1];
-			switch (nomVariable) {
+		for (Map.Entry mapentry : response.entrySet()) {
+			switch (mapentry.getKey().toString()) {
 			case "Code_commune_INSEE" :
-				Code_commune_INSEE = valeurVariable;
+				ville.setCode_commune_INSEE(Integer.parseInt(mapentry.getValue().toString()));
 				break;
 			case "Nom_commune" :
-				Nom_commune = valeurVariable;
+				ville.setNom_commune(mapentry.getValue().toString());
 				break;
 			case "Code_postal" :
-				Code_postal = valeurVariable;
+				ville.setCode_postal(Integer.parseInt(mapentry.getValue().toString()));
 				break;
 			case "Libelle_acheminement" :
-				Code_postal = valeurVariable;
+				ville.setLibelle_acheminement(mapentry.getValue().toString());
 				break;
 			case "Ligne_5" :
-				Code_postal = valeurVariable;
+				ville.setLigne_5(mapentry.getValue().toString());
 				break;
 			case "Latitude" :
-				Code_postal = valeurVariable;
+				ville.setLatitude(Double.parseDouble(mapentry.getValue().toString()));
 				break;
 			case "Longitude" :
-				Code_postal = valeurVariable;
+				ville.setLongitude(Double.parseDouble(mapentry.getValue().toString()));
 				break;
 			}
 		}
 		
 		Connection connexion = null;
 		PreparedStatement preparedStatement = null;
+		System.out.println(ville.toString());
 
 		try {
 			DaoFactory daoFactory = DaoFactory.getInstance();
 			connexion = daoFactory.getConnection();
-
+			System.out.println("Connexion à la base de donnée établie");
+			
 			//Trouver les identifiants des équipes
-			preparedStatement = connexion.prepareStatement("INSERT INTO ville_france VALUES('?','?','?','?','?','?','?');");
-			preparedStatement.setString(1, Code_commune_INSEE);
-			preparedStatement.setString(2, Nom_commune);
-			preparedStatement.setString(3, Code_postal);
-			preparedStatement.setString(4, Libelle_acheminement);
-			preparedStatement.setString(5, Ligne_5);
-			preparedStatement.setString(6, Latitude);
-			preparedStatement.setString(7, Longitude);
+			preparedStatement = connexion.prepareStatement("INSERT INTO ville_france VALUES(?,?,?,?,?,?,?);");
+			preparedStatement.setInt(1, ville.getCode_commune_INSEE());
+			preparedStatement.setString(2, ville.getNom_commune());
+			preparedStatement.setInt(3, ville.getCode_postal());
+			preparedStatement.setString(4, ville.getLibelle_acheminement());
+			preparedStatement.setString(5, ville.getLigne_5());
+			preparedStatement.setDouble(6, ville.getLatitude());
+			preparedStatement.setDouble(7, ville.getLongitude());
 			preparedStatement.executeUpdate();
-			System.out.println("Requête envoyé");
+			System.out.println("Requête INSERT envoyé");
 		} catch (SQLException e) {
-			System.out.println("ça merde");
+			System.out.println(e.getMessage());
 		}
-
 		return request;
 	}
 	     
