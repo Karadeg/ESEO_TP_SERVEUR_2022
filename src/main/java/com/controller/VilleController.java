@@ -29,7 +29,6 @@ public class VilleController {
 	@GetMapping(value="/ville")
 	public String select(@RequestParam(required  = false, value="codePostal") String codePostal) {
 		Connection connexion = null;
-		ResultSet resultat = null;
 		ArrayList<Ville> listVilles= new ArrayList<>();
 
 		try {
@@ -44,18 +43,18 @@ public class VilleController {
 				requete = "SELECT * FROM ville_france WHERE Code_postal = "+codePostal+";";
 			}
 			try (Statement statement = connexion.createStatement()){
-				resultat = statement.executeQuery(requete);
-				
-				while (resultat.next()) {
-					Ville ville = new Ville();
-					ville.setCodeCommuneINSEE(resultat.getInt("Code_commune_INSEE"));
-					ville.setNomCommune(resultat.getString("Nom_commune"));
-					ville.setCodePostal(resultat.getInt("Code_postal"));
-					ville.setLibelleAcheminement(resultat.getString("Libelle_acheminement"));
-					ville.setLigne5(resultat.getString("Ligne_5"));
-					ville.setLatitude(resultat.getString("Latitude"));
-					ville.setLongitude(resultat.getString("Longitude"));
-					listVilles.add(ville);
+				try (ResultSet resultat = statement.executeQuery(requete)){
+					while (resultat.next()) {
+						Ville ville = new Ville();
+						ville.setCodeCommuneINSEE(resultat.getInt("Code_commune_INSEE"));
+						ville.setNomCommune(resultat.getString("Nom_commune"));
+						ville.setCodePostal(resultat.getInt("Code_postal"));
+						ville.setLibelleAcheminement(resultat.getString("Libelle_acheminement"));
+						ville.setLigne5(resultat.getString("Ligne_5"));
+						ville.setLatitude(resultat.getString("Latitude"));
+						ville.setLongitude(resultat.getString("Longitude"));
+						listVilles.add(ville);
+					}
 				}
 			}
 		} catch (SQLException e) {
