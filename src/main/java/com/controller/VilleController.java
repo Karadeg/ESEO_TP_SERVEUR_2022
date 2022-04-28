@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.apache.commons.logging.Log;
 
 import com.dao.DaoFactory;
 import com.data.models.Ville;
@@ -24,6 +25,7 @@ import com.google.gson.Gson;
 //@RequestMapping(path="/JSON", produces="application/json")
 public class VilleController {
 	private Gson gson = new Gson();
+	private Log logger = null;
 
 	// fonction pour récupérer le contenu de la BDD
 	@GetMapping(value="/ville")
@@ -58,7 +60,7 @@ public class VilleController {
 				}
 			}
 		} catch (SQLException e) {
-			e.printStackTrace();
+			logger.info(e);
 		}
 		return listVilles.toString();
 	}
@@ -84,7 +86,7 @@ public class VilleController {
 				preparedStatement.executeUpdate();
 			}
 		} catch (SQLException e) {
-			e.printStackTrace();
+			logger.info(e);
 		}
 		return request;
 	}
@@ -118,7 +120,7 @@ public class VilleController {
 				preparedStatement.executeUpdate();
 			}
 		} catch (SQLException e) {
-			e.printStackTrace();
+			logger.info(e);
 		}
 		return request;
 	}
@@ -135,7 +137,7 @@ public class VilleController {
 				preparedStatement.executeUpdate();
 			}
 		} catch (SQLException e) {
-			e.printStackTrace();
+			logger.info(e);
 		}
 	}
 }
