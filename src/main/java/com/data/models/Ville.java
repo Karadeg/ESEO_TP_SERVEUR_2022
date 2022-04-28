@@ -8,83 +8,85 @@ import java.util.Objects;
 @EntityScan
 public class Ville {
     @Id
-    private int Code_commune_INSEE;
-    private String Nom_commune;
-    private int Code_postal;
-    private String Libelle_acheminement;
-    private String Ligne_5;
-    private double Latitude;
-    private double Longitude;
+    private int codeCommuneINSEE;
+    private String nomCommune;
+    private int codePostal;
+    private String libelleAcheminement;
+    private String ligne5;
+    private String latitude;
+    private String longitude;
 
-    public Ville(){}
+    public Ville(){
+    	//Nothing to do
+    }
 
     @Override
     public String toString() {
         return "{" +
-                "\"Code_commune_INSEE\": \"" + Code_commune_INSEE +
-                "\", \"Nom_commune\": \"" + Nom_commune + '\"' +
-                ", \"Code_postal\": \"" + Code_postal + '\"' +
-                ", \"Libelle_acheminement\": \"" + Libelle_acheminement + '\"' +
-                ", \"Ligne_5\": \"" + Ligne_5 + '\"' +
-                ", \"Latitude\": \"" + Latitude +
-                "\", \"Longitude\": \"" + Longitude +
+                "\"Code_commune_INSEE\": \"" + codeCommuneINSEE +
+                "\", \"Nom_commune\": \"" + nomCommune + '\"' +
+                ", \"Code_postal\": \"" + codePostal + '\"' +
+                ", \"Libelle_acheminement\": \"" + libelleAcheminement + '\"' +
+                ", \"Ligne_5\": \"" + ligne5 + '\"' +
+                ", \"Latitude\": \"" + latitude +
+                "\", \"Longitude\": \"" + longitude +
                 "\"}";
     }
 
-    public int getCode_commune_INSEE() {
-		return Code_commune_INSEE;
+    public int getCodeCommuneINSEE() {
+		return codeCommuneINSEE;
 	}
 
-	public void setCode_commune_INSEE(int code_commune_INSEE) {
-		Code_commune_INSEE = code_commune_INSEE;
+	public void setCodeCommuneINSEE(int codeCommuneINSEE) {
+		this.codeCommuneINSEE = codeCommuneINSEE;
 	}
 
-	public String getNom_commune() {
-		return Nom_commune;
+	public String getNomCommune() {
+		return nomCommune;
 	}
 
-	public void setNom_commune(String nom_commune) {
-		Nom_commune = nom_commune;
+	public void setNomCommune(String nomCommune) {
+		this.nomCommune = nomCommune;
 	}
 
-	public int getCode_postal() {
-		return Code_postal;
+	public int getCodePostal() {
+		return codePostal;
 	}
 
-	public void setCode_postal(int code_postal) {
-		Code_postal = code_postal;
+	public void setCodePostal(int codePostal) {
+		this.codePostal = codePostal;
 	}
 
-	public String getLibelle_acheminement() {
-		return Libelle_acheminement;
+	public String getLibelleAcheminement() {
+		return libelleAcheminement;
 	}
 
-	public void setLibelle_acheminement(String libelle_acheminement) {
-		Libelle_acheminement = libelle_acheminement;
+	public void setLibelleAcheminement(String libelleAcheminement) {
+		this.libelleAcheminement = libelleAcheminement;
 	}
 
-	public String getLigne_5() {
-		return Ligne_5;
+	public String getLigne5() {
+		return ligne5;
 	}
 
-	public void setLigne_5(String ligne_5) {
-		Ligne_5 = ligne_5;
+	public void setLigne5(String ligne5) {
+		this.ligne5 = ligne5;
 	}
 
-	public double getLatitude() {
-		return Latitude;
+	public String getLatitude() {
+		return latitude;
 	}
 
-	public void setLatitude(double latitude) {
-		Latitude = latitude;
+	public void setLatitude(String latitude) {
+		this.latitude = latitude;
 	}
 
-	public double getLongitude() {
-		return Longitude;
+	public String getLongitude() {
+		return longitude;
 	}
 
-	public void setLongitude(double longitude) {
-		Longitude = longitude;
+	public void setLongitude(String longitude) {
+		this.longitude = longitude;
 	}
 
 	@Override
@@ -92,11 +94,11 @@ public class Ville {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Ville ville = (Ville) o;
-        return Double.compare(ville.getLongitude(), this.getLongitude()) == 0 && Double.compare(ville.getLatitude(), this.getLatitude()) == 0 && Objects.equals(ville.getCode_commune_INSEE(), this.getCode_commune_INSEE()) && Objects.equals(this.getNom_commune(), ville.getNom_commune()) && Objects.equals(this.getCode_postal(), ville.getCode_postal()) && Objects.equals(ville.getLibelle_acheminement(), this.getLibelle_acheminement()) && Objects.equals(this.getLigne_5(), ville.getLigne_5());
+        return Objects.equals(this.getLatitude(), ville.getLatitude()) && Objects.equals(this.getLongitude(), ville.getLongitude()) && Objects.equals(ville.getCodeCommuneINSEE(), this.getCodeCommuneINSEE()) && Objects.equals(this.getNomCommune(), ville.getNomCommune()) && Objects.equals(this.getCodePostal(), ville.getCodePostal()) && Objects.equals(ville.getLibelleAcheminement(), this.getLibelleAcheminement()) && Objects.equals(this.getLigne5(), ville.getLigne5());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.getCode_commune_INSEE(), this.getNom_commune(), this.getCode_postal(), this.getLibelle_acheminement(), this.getLigne_5(), this.getLatitude(), this.getLongitude());
+        return Objects.hash(this.getCodeCommuneINSEE(), this.getNomCommune(), this.getCodePostal(), this.getLibelleAcheminement(), this.getLigne5(), this.getLatitude(), this.getLongitude());
     }
 }

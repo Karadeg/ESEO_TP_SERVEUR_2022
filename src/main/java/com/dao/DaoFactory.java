@@ -19,12 +19,10 @@ public class DaoFactory {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
         } catch (ClassNotFoundException e) {
-
-        }
-
-        DaoFactory instance = new DaoFactory(
-        		"jdbc:mysql://localhost:3306/mavenexo1", "root", "1234");        
-        return instance;
+        	e.printStackTrace();
+        }      
+        return new DaoFactory(
+        		"jdbc:mysql://localhost:3306/mavenexo1", "root", "1234"); 
     }
 
     public Connection getConnection() throws SQLException {
