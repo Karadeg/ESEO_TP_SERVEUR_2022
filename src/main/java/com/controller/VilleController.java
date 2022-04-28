@@ -29,7 +29,6 @@ public class VilleController {
 	@GetMapping(value="/ville")
 	public String select(@RequestParam(required  = false, value="codePostal") String codePostal) {
 		Connection connexion = null;
-		Statement statement = null;
 		ResultSet resultat = null;
 		ArrayList<Ville> listVilles= new ArrayList<>();
 
@@ -44,19 +43,20 @@ public class VilleController {
 			} else {
 				requete = "SELECT * FROM ville_france WHERE Code_postal = "+codePostal+";";
 			}
-			statement = connexion.createStatement();
-			resultat = statement.executeQuery(requete);
-			
-			while (resultat.next()) {
-				Ville ville = new Ville();
-				ville.setCodeCommuneINSEE(resultat.getInt("Code_commune_INSEE"));
-				ville.setNomCommune(resultat.getString("Nom_commune"));
-				ville.setCodePostal(resultat.getInt("Code_postal"));
-				ville.setLibelleAcheminement(resultat.getString("Libelle_acheminement"));
-				ville.setLigne5(resultat.getString("Ligne_5"));
-				ville.setLatitude(resultat.getString("Latitude"));
-				ville.setLongitude(resultat.getString("Longitude"));
-				listVilles.add(ville);
+			try (Statement statement = connexion.createStatement()){
+				resultat = statement.executeQuery(requete);
+				
+				while (resultat.next()) {
+					Ville ville = new Ville();
+					ville.setCodeCommuneINSEE(resultat.getInt("Code_commune_INSEE"));
+					ville.setNomCommune(resultat.getString("Nom_commune"));
+					ville.setCodePostal(resultat.getInt("Code_postal"));
+					ville.setLibelleAcheminement(resultat.getString("Libelle_acheminement"));
+					ville.setLigne5(resultat.getString("Ligne_5"));
+					ville.setLatitude(resultat.getString("Latitude"));
+					ville.setLongitude(resultat.getString("Longitude"));
+					listVilles.add(ville);
+				}
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -69,22 +69,21 @@ public class VilleController {
 		Ville ville = gson.fromJson(request, Ville.class);
 		
 		Connection connexion = null;
-		PreparedStatement preparedStatement = null;
 
 		try {
 			DaoFactory daoFactory = DaoFactory.getInstance();
 			connexion = daoFactory.getConnection();
 			
-			//Trouver les identifiants des équipes
-			preparedStatement = connexion.prepareStatement("INSERT INTO ville_france VALUES(?,?,?,?,?,?,?);");
-			preparedStatement.setInt(1, ville.getCodeCommuneINSEE());
-			preparedStatement.setString(2, ville.getNomCommune());
-			preparedStatement.setInt(3, ville.getCodePostal());
-			preparedStatement.setString(4, ville.getLibelleAcheminement());
-			preparedStatement.setString(5, ville.getLigne5());
-			preparedStatement.setString(6, ville.getLatitude());
-			preparedStatement.setString(7, ville.getLongitude());
-			preparedStatement.executeUpdate();
+			try (PreparedStatement preparedStatement = connexion.prepareStatement("INSERT INTO ville_france VALUES(?,?,?,?,?,?,?);")){
+				preparedStatement.setInt(1, ville.getCodeCommuneINSEE());
+				preparedStatement.setString(2, ville.getNomCommune());
+				preparedStatement.setInt(3, ville.getCodePostal());
+				preparedStatement.setString(4, ville.getLibelleAcheminement());
+				preparedStatement.setString(5, ville.getLigne5());
+				preparedStatement.setString(6, ville.getLatitude());
+				preparedStatement.setString(7, ville.getLongitude());
+				preparedStatement.executeUpdate();
+			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -96,37 +95,31 @@ public class VilleController {
 		Ville[] villes = gson.fromJson(request, Ville[].class);
 		
 		Connection connexion = null;
-		PreparedStatement preparedStatement = null;
 		try {
 			DaoFactory daoFactory = DaoFactory.getInstance();
 			connexion = daoFactory.getConnection();
 			
 			//Trouver les identifiants des équipes
-			preparedStatement = connexion.prepareStatement("UPDATE ville_france SET Code_commune_INSEE = ?, "
+			try (PreparedStatement preparedStatement = connexion.prepareStatement("UPDATE ville_france SET Code_commune_INSEE = ?, "
 					+ "Nom_commune = ?, "
 					+ "Code_postal=?, "
 					+ "Libelle_acheminement=?, "
 					+ "Ligne_5=?, "
 					+ "Latitude=?, "
 					+ "Longitude=? "
-					+ "WHERE Code_commune_INSEE=?;");
-			preparedStatement.setInt(1, villes[1].getCodeCommuneINSEE());
-			preparedStatement.setString(2, villes[1].getNomCommune());
-			preparedStatement.setInt(3, villes[1].getCodePostal());
-			preparedStatement.setString(4, villes[1].getLibelleAcheminement());
-			preparedStatement.setString(5, villes[1].getLigne5());
-			preparedStatement.setString(6, villes[1].getLatitude());
-			preparedStatement.setString(7, villes[1].getLongitude());
-			preparedStatement.setInt(8, villes[0].getCodeCommuneINSEE());
-			preparedStatement.executeUpdate();
+					+ "WHERE Code_commune_INSEE=?;")) {
+				preparedStatement.setInt(1, villes[1].getCodeCommuneINSEE());
+				preparedStatement.setString(2, villes[1].getNomCommune());
+				preparedStatement.setInt(3, villes[1].getCodePostal());
+				preparedStatement.setString(4, villes[1].getLibelleAcheminement());
+				preparedStatement.setString(5, villes[1].getLigne5());
+				preparedStatement.setString(6, villes[1].getLatitude());
+				preparedStatement.setString(7, villes[1].getLongitude());
+				preparedStatement.setInt(8, villes[0].getCodeCommuneINSEE());
+				preparedStatement.executeUpdate();
+			}
 		} catch (SQLException e) {
 			e.printStackTrace();
-		} finally {
-			try {
-				preparedStatement.close();
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
 		}
 		return request;
 	}
@@ -134,23 +127,16 @@ public class VilleController {
 	@DeleteMapping(value="/ville")
 	public void delete(@RequestParam(required  = false, value="Code_commune_INSEE") String codeCommuneINSEE) {
 		Connection connexion = null;
-		PreparedStatement preparedStatement = null;
 		try {
 			DaoFactory daoFactory = DaoFactory.getInstance();
 			connexion = daoFactory.getConnection();
 			
-			//Trouver les identifiants des équipes
-			preparedStatement = connexion.prepareStatement("DELETE FROM ville_france WHERE Code_commune_INSEE=?;");
-			preparedStatement.setInt(1, Integer.parseInt(codeCommuneINSEE));
-			preparedStatement.executeUpdate();
+			try (PreparedStatement preparedStatement = connexion.prepareStatement("DELETE FROM ville_france WHERE Code_commune_INSEE=?;")){
+				preparedStatement.setInt(1, Integer.parseInt(codeCommuneINSEE));
+				preparedStatement.executeUpdate();
+			}
 		} catch (SQLException e) {
 			e.printStackTrace();
-		} finally {
-			try {
-				preparedStatement.close();
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
 		}
 	}
 }
