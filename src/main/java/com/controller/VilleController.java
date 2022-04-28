@@ -7,8 +7,11 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -125,19 +128,21 @@ public class VilleController {
 		return request;
 	}
 
-	@DeleteMapping(value="/ville")
-	public void delete(@RequestParam(required  = false, value="Code_commune_INSEE") String codeCommuneINSEE) {
+	@DeleteMapping(value = "/ville/{id}")
+	public ResponseEntity<Object> delete(@PathVariable String id) {
 		Connection connexion = null;
 		try {
 			DaoFactory daoFactory = DaoFactory.getInstance();
 			connexion = daoFactory.getConnection();
 			
 			try (PreparedStatement preparedStatement = connexion.prepareStatement("DELETE FROM ville_france WHERE Code_commune_INSEE=?;")){
-				preparedStatement.setInt(1, Integer.parseInt(codeCommuneINSEE));
+				preparedStatement.setInt(1, Integer.parseInt(id));
 				preparedStatement.executeUpdate();
 			}
 		} catch (SQLException e) {
 			logger.info(e);
 		}
+		
+		return ResponseEntity.status(HttpStatus.CREATED).build();
 	}
 }

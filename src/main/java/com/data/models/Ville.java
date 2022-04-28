@@ -23,13 +23,13 @@ public class Ville {
     @Override
     public String toString() {
         return "{" +
-                "\"Code_commune_INSEE\": \"" + codeCommuneINSEE +
-                "\", \"Nom_commune\": \"" + nomCommune + '\"' +
-                ", \"Code_postal\": \"" + codePostal + '\"' +
-                ", \"Libelle_acheminement\": \"" + libelleAcheminement + '\"' +
-                ", \"Ligne_5\": \"" + ligne5 + '\"' +
-                ", \"Latitude\": \"" + latitude +
-                "\", \"Longitude\": \"" + longitude +
+                "\"codeCommuneINSEE\": \"" + codeCommuneINSEE +
+                "\", \"nomCommune\": \"" + nomCommune + '\"' +
+                ", \"codePostal\": \"" + codePostal + '\"' +
+                ", \"libelleAcheminement\": \"" + libelleAcheminement + '\"' +
+                ", \"ligne5\": \"" + ligne5 + '\"' +
+                ", \"latitude\": \"" + latitude +
+                "\", \"longitude\": \"" + longitude +
                 "\"}";
     }
 
